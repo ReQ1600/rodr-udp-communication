@@ -6,6 +6,9 @@
 
 #include "rodrUtils.hpp"
 
+#pragma comment(lib, "ws2_32.lib")
+//if vsc add "-lws2_32" to tasks.json/args
+
 namespace rodr
 {
     namespace udp
