@@ -18,21 +18,21 @@ namespace rodr
         class UDP
         {
         public:
-        UDP(const char* src_ip, const char* remote_ip, u_short local_port, u_short remote_port);
-        ~UDP();
-
-        void SendMsg(const char* msg) const;
-        void ReceiveAndHandle(rodr::handler handler_function) const;
-        void ReceiveAndHandle(char* buffer, unsigned int buffer_size, rodr::handler handler_function) const;
+            UDP(const char* src_ip, const char* remote_ip, u_short local_port, u_short remote_port);
+            ~UDP();
+    
+            void SendMsg(const char* msg) const;
+            void ReceiveAndHandle(rodr::handler handler, rodr::handler err_handler = [](const char*){return;}) const;
+            void ReceiveAndHandle(char* buffer, unsigned int buffer_size, rodr::handler handler, rodr::handler err_handler = [](const char*){return;}) const;
 
         private:
-        const char* msg_;
-
-        SOCKET socket_;
-        sockaddr_in remote_;
-        sockaddr_in local_;
-
-        WSAData data_;
+            const char* msg_;
+    
+            SOCKET socket_;
+            sockaddr_in remote_;
+            sockaddr_in local_;
+    
+            WSAData data_;
         };
     }
 }
