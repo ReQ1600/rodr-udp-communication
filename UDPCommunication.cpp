@@ -7,55 +7,54 @@ namespace rodr
         //creates and openes the socket
         UDP::UDP(const char* local_ip, const char* remote_ip, u_short local_port, u_short remote_port)
         {
-        if (WSAStartup(MAKEWORD(2,2), &data_) != 0)
-        {
-            std::cerr << "WSAStartup failed with error code: " << WSAGetLastError() << std::endl;
-            return;
-        }
-
-        int ret;
-
-        //local sock setup
-        local_.sin_family = AF_INET;
-        ret = inet_pton(local_.sin_family, local_ip, &local_.sin_addr.S_un.S_addr);
-        
-        if (ret <= 0)
-        {
-            if (ret == 0) std::cerr << "Invalid local address format: " << local_ip << std::endl; 
-            else std::cerr << "inet_pton failed for local with error code: " << WSAGetLastError() << std::endl;
-
-            WSACleanup();
-            return;
-        }
-        
-        local_.sin_port = htons(local_port);
-
-        //remote sock setup
-        remote_.sin_family = AF_INET;
-        ret = inet_pton(remote_.sin_family, remote_ip, &remote_.sin_addr.S_un.S_addr);
-        
-        if (ret <= 0)
-        {
-            if (ret == 0) std::cerr << "Invalid remote address format: " << local_ip << std::endl; 
-            else std::cerr << "inet_pton failed for remote with error code: " << WSAGetLastError() << std::endl;
-
-            WSACleanup();
-            return;
-        }
-        
-        remote_.sin_port = htons(remote_port);
-
-        //opening the socket
-        socket_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (socket_ == INVALID_SOCKET) 
-        {
-            std::cerr << "Socket creation failed with error code: " << WSAGetLastError() << std::endl;
-            WSACleanup();
-            return;
-        }
-        bind(socket_, (sockaddr*) &local_, sizeof(local_));
-
-
+            if (WSAStartup(MAKEWORD(2,2), &data_) != 0)
+            {
+                std::cerr << "WSAStartup failed with error code: " << WSAGetLastError() << std::endl;
+                return;
+            }
+    
+            int ret;
+    
+            //local sock setup
+            local_.sin_family = AF_INET;
+            ret = inet_pton(local_.sin_family, local_ip, &local_.sin_addr.S_un.S_addr);
+            
+            if (ret <= 0)
+            {
+                if (ret == 0) std::cerr << "Invalid local address format: " << local_ip << std::endl; 
+                else std::cerr << "inet_pton failed for local with error code: " << WSAGetLastError() << std::endl;
+    
+                WSACleanup();
+                return;
+            }
+            
+            local_.sin_port = htons(local_port);
+    
+            //remote sock setup
+            remote_.sin_family = AF_INET;
+            ret = inet_pton(remote_.sin_family, remote_ip, &remote_.sin_addr.S_un.S_addr);
+            
+            if (ret <= 0)
+            {
+                if (ret == 0) std::cerr << "Invalid remote address format: " << local_ip << std::endl; 
+                else std::cerr << "inet_pton failed for remote with error code: " << WSAGetLastError() << std::endl;
+    
+                WSACleanup();
+                return;
+            }
+            
+            remote_.sin_port = htons(remote_port);
+    
+            //opening the socket
+            socket_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+            if (socket_ == INVALID_SOCKET) 
+            {
+                std::cerr << "Socket creation failed with error code: " << WSAGetLastError() << std::endl;
+                WSACleanup();
+                return;
+            }
+            
+            bind(socket_, (sockaddr*) &local_, sizeof(local_));
         }
 
         UDP::~UDP()
