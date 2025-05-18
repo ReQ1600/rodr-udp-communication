@@ -60,8 +60,8 @@ namespace rodr
 
         UDP::~UDP()
         {
-        closesocket(socket_);
-        WSACleanup();
+            closesocket(socket_);
+            WSACleanup();
         }
 
         void UDP::SendMsg(const char* msg) const
@@ -70,7 +70,7 @@ namespace rodr
             if (sent_bytes == SOCKET_ERROR) std::cerr << "Send failed with error code: " << WSAGetLastError() << std::endl;
         }
 
-        void UDP::ReceiveAndHandle(rodr::handler handler_function) const
+        void UDP::ReceiveAndHandle(rodr::handler handler, rodr::handler err_handler) const
         {
             char buffer[DEFAULT_BUFFER_SIZE] = { 0 };
             int remote_length = sizeof(remote_);
@@ -79,27 +79,41 @@ namespace rodr
 
             std::cout << buffer << std::endl;
 
-        if (received > 0) 
-        {
-            std::cout << "UDP Received: " << buffer << std::endl;
-            handler_function(buffer);
-        }
-        else std::cerr << "UDP Receive failed with error code: " << WSAGetLastError() << std::endl;
+            if (received > 0)
+            {
+                std::cout << "UDP Received: " << buffer << std::endl;
+                handler(buffer);
+            }
+            else
+            {
+                char last_err[8];
+                snprintf(last_err, sizeof(last_err), "%d", WSAGetLastError());
+
+                std::cerr << "UDP Receive failed with error code: " << last_err << std::endl;
+                err_handler(last_err);
+            }
         }
 
         //can be given empty function to handle data from buffer outside the class
-        inline void UDP::ReceiveAndHandle(char* buffer, unsigned int buffer_size, rodr::handler handler_function) const
+        inline void UDP::ReceiveAndHandle(char* buffer, unsigned int buffer_size, rodr::handler handler, rodr::handler err_handler) const
         {
             int remote_length = sizeof(remote_);
 
             int received = recvfrom(socket_, buffer, buffer_size, 0, (sockaddr*) &remote_, &remote_length);
 
-        if (received > 0) 
-        {
-            std::cout << "UDP Received: " << buffer << std::endl;
-            handler_function(buffer);
-        }
-        else std::cerr << "UDP Receive failed with error code: " << WSAGetLastError() << std::endl;
+            if (received > 0)
+            {
+                std::cout << "UDP Received: " << buffer << std::endl;
+                handler(buffer);
+            }
+            else
+            {
+                char last_err[8];
+                snprintf(last_err, sizeof(last_err), "%d", WSAGetLastError());
+
+                std::cerr << "UDP Receive failed with error code: " << last_err << std::endl;
+                err_handler(last_err);
+            }
         }
     }
 }
